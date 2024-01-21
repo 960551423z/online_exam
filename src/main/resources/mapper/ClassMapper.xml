@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.camellia.exam.mapper.ClassMapper">
+
+    <resultMap id="BaseResultMap" type="com.camellia.exam.model.entity.Class">
+            <id property="id" column="id" jdbcType="BIGINT"/>
+            <result property="className" column="className" jdbcType="VARCHAR"/>
+            <result property="subjectId" column="subjectId" jdbcType="BIGINT"/>
+            <result property="userId" column="userId" jdbcType="BIGINT"/>
+            <result property="updateId" column="updateId" jdbcType="BIGINT"/>
+            <result property="createTime" column="createTime" jdbcType="TIMESTAMP"/>
+            <result property="updateTime" column="updateTime" jdbcType="TIMESTAMP"/>
+            <result property="isDelete" column="isDelete" jdbcType="TINYINT"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,className,subjectId,
+        userId,createTime,updateTime, updateId
+        isDelete
+    </sql>
+</mapper>

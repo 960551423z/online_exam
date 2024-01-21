@@ -1,7 +1,7 @@
 package com.camellia.exam.service;
 
-import com.camellia.exam.model.dto.UserDTO;
-import com.camellia.exam.model.dto.UserLoginDTO;
+import com.camellia.exam.model.dto.user.UserDTO;
+import com.camellia.exam.model.dto.user.UserLoginDTO;
 import com.camellia.exam.model.entity.User;
 import com.baomidou.mybatisplus.extension.service.IService;
 

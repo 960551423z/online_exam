@@ -8,7 +8,7 @@ import org.springframework.util.DigestUtils;
  * 加密工具包，防止每次都要重写
  */
 
-public class DigestUtilsMD5 {
+public class MD5Utils {
 
     public static String encryption(String password) {
         return  DigestUtils.md5DigestAsHex(password.getBytes());

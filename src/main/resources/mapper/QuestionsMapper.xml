@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.camellia.exam.mapper.QuestionsMapper">
+
+    <resultMap id="BaseResultMap" type="com.camellia.exam.model.entity.Questions">
+            <id property="id" column="id" jdbcType="BIGINT"/>
+            <result property="title" column="title" jdbcType="VARCHAR"/>
+            <result property="optionA" column="optionA" jdbcType="VARCHAR"/>
+            <result property="optionB" column="optionB" jdbcType="VARCHAR"/>
+            <result property="optionC" column="optionC" jdbcType="VARCHAR"/>
+            <result property="optionD" column="optionD" jdbcType="VARCHAR"/>
+            <result property="answer" column="answer" jdbcType="VARCHAR"/>
+            <result property="parse" column="parse" jdbcType="VARCHAR"/>
+            <result property="subjectId" column="subjectId" jdbcType="BIGINT"/>
+            <result property="examPaperId" column="examPaperId" jdbcType="BIGINT"/>
+            <result property="score" column="score" jdbcType="INTEGER"/>
+            <result property="degree" column="degree" jdbcType="INTEGER"/>
+            <result property="quesType" column="quesType" jdbcType="INTEGER"/>
+            <result property="createId" column="createId" jdbcType="BIGINT"/>
+            <result property="updateId" column="updateId" jdbcType="BIGINT"/>
+            <result property="createTime" column="createTime" jdbcType="TIMESTAMP"/>
+            <result property="updateTime" column="updateTime" jdbcType="TIMESTAMP"/>
+            <result property="isDelete" column="isDelete" jdbcType="TINYINT"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,title,optionA,
+        optionB,optionC,optionD,
+        answer,parse,subjectId,
+        examPaperId,score,degree,
+        quesType,createId,updateId,
+        createTime,updateTime,isDelete
+    </sql>
+</mapper>

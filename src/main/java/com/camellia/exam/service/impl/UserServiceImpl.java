@@ -11,19 +11,16 @@ import com.camellia.exam.exception.AccountLockedException;
 import com.camellia.exam.exception.AccountNotFoundException;
 import com.camellia.exam.exception.PasswordErrorException;
 import com.camellia.exam.mapper.UserMapper;
-import com.camellia.exam.model.dto.UserDTO;
-import com.camellia.exam.model.dto.UserLoginDTO;
+import com.camellia.exam.model.dto.user.UserDTO;
+import com.camellia.exam.model.dto.user.UserLoginDTO;
 import com.camellia.exam.model.entity.User;
 import com.camellia.exam.service.UserService;
-import com.camellia.exam.utils.DigestUtilsMD5;
+import com.camellia.exam.utils.MD5Utils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
-import org.springframework.util.DigestUtils;
 
 import javax.annotation.Resource;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.Objects;
 
@@ -61,7 +58,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         }
 
 
-        userPassword = DigestUtilsMD5.encryption(userPassword);
+        userPassword = MD5Utils.encryption(userPassword);
         if (!userPassword.equals(user.getUserPassword())) {
             //密码错误
             throw new PasswordErrorException(MessageConstant.PASSWORD_ERROR);
@@ -86,7 +83,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
 
         // 设置剩下的属性
         user.setUserAvatar(UserAddConstant.USER_AVATAR);
-        user.setUserPassword(DigestUtilsMD5.encryption(userDTO.getUserPassword()));
+        user.setUserPassword(MD5Utils.encryption(userDTO.getUserPassword()));
         user.setUserStatus(StatusConstant.ENABLE);
         user.setCreateTime(date);
 
@@ -124,7 +121,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         user.setUpdateUser(null);
         // TODO: 后台注册默认是admin账号
         user.setUserRole(UserRoleConstant.USER_ADMIN);
-        user.setUserPassword(DigestUtilsMD5.encryption(userDTO.getUserPassword()));
+        user.setUserPassword(MD5Utils.encryption(userDTO.getUserPassword()));
         user.setUpdateTime(date);
         user.setCreateTime(date);
         userMapper.insert(user);

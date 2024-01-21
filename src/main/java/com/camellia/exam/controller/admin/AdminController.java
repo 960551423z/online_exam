@@ -1,30 +1,35 @@
 package com.camellia.exam.controller.admin;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.camellia.exam.commont.PageResult;
 import com.camellia.exam.commont.Result;
+import com.camellia.exam.constant.DeleteConstant;
 import com.camellia.exam.constant.JwtClaimsConstant;
+import com.camellia.exam.constant.MessageConstant;
 import com.camellia.exam.constant.MsgSuccessConstant;
-import com.camellia.exam.context.BaseContext;
-import com.camellia.exam.model.dto.UserDTO;
-import com.camellia.exam.model.dto.UserLoginDTO;
-import com.camellia.exam.model.dto.UserPageQueryDTO;
+import com.camellia.exam.model.dto.user.UserDTO;
+import com.camellia.exam.model.dto.user.UserLoginDTO;
+import com.camellia.exam.model.dto.user.UserPageQueryDTO;
+import com.camellia.exam.model.entity.Subject;
 import com.camellia.exam.model.entity.User;
 import com.camellia.exam.model.vo.UserLoginVO;
+import com.camellia.exam.model.vo.UserVO;
+import com.camellia.exam.properties.EmailProperties;
 import com.camellia.exam.properties.JwtProperties;
 import com.camellia.exam.service.UserService;
-import com.camellia.exam.utils.JwtUtil;
+import com.camellia.exam.utils.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -42,6 +47,13 @@ public class AdminController {
 
     @Autowired
     private JwtProperties jwtProperties;
+
+    @Autowired
+    private EmailProperties emailProperties;
+
+    @Autowired
+    private RedisTemplate<String,Object>  redisTemplate;
+
 
 
     /**
@@ -89,10 +101,53 @@ public class AdminController {
     @PostMapping("/register")
     @ApiOperation(value = "用户注册")
     public Result register(@RequestBody UserDTO userDTO) {
-        userService.register(userDTO);
-        return Result.success(MsgSuccessConstant.REGISTER_SUCCESS);
+
+        // 判断邮箱格式
+        if (Boolean.FALSE.equals(RegexUtils.checkEmail(userDTO.getUserAccount()))) {
+            return Result.error(MessageConstant.EMAIL_ERROR);
+        }
+
+        // 从redis获取验证码，若存在判断请求的验证码，则register，否则返回 "无效的验证码"
+        Object code = RedisUtils.get(redisTemplate, userDTO.getUserAccount());
+        Integer inpCode = userDTO.getCode();
+        if (code == null) {
+            return Result.error(MessageConstant.CODE_EXPIRATION_ERROR);
+        } else if (inpCode == null || !inpCode.equals(code)) {
+            return Result.error(MessageConstant.CODE_ERROR);
+        } else {
+            userService.register(userDTO);
+            return Result.success(MsgSuccessConstant.REGISTER_SUCCESS);
+        }
+
     }
 
+
+
+
+    @PostMapping("/sendEmail")
+    @ApiOperation(value = "发送邮件")
+    public Result email(String userAccount) {
+
+        Integer rangeCode = EmailUtils.rangeCode();
+        // 判断邮箱格式
+        if (Boolean.FALSE.equals(RegexUtils.checkEmail(userAccount))) {
+            return Result.error(MessageConstant.EMAIL_ERROR);
+        }
+
+        Object code = RedisUtils.get(redisTemplate,userAccount);
+        if (code != null) {
+            return Result.error(MessageConstant.CODE_EMAIL_ERROR);
+        }
+
+        User one = userService.getOne(new LambdaQueryWrapper<User>().eq(User::getUserAccount, userAccount));
+        if (one != null) {
+            return Result.error(MessageConstant.ALREADY_EXISTS);
+        }
+
+        EmailUtils.send(emailProperties,userAccount,rangeCode);
+        RedisUtils.set(redisTemplate,userAccount,rangeCode);
+        return Result.success(MsgSuccessConstant.EMAIL_SUCCESS);
+    }
 
     /**
      * 新增用户
@@ -118,12 +173,19 @@ public class AdminController {
     @ApiOperation(value = "用户分页查询")
     public Result<PageResult> page(UserPageQueryDTO queryDTO) {
         log.info("分页查询的参数：{}", queryDTO);
+
         LambdaQueryWrapper<User> wrapper = new LambdaQueryWrapper<>();
         wrapper.like(StringUtils.isNotBlank(queryDTO.getUserAccount()),User::getUserAccount, queryDTO.getUserAccount())
                 .like(StringUtils.isNotBlank(queryDTO.getUserName()),User::getUserName, queryDTO.getUserName());
+
         Page<User> pageInfo = new Page<>(queryDTO.getPage(), queryDTO.getPageSize());
         Page<User> page = userService.page(pageInfo, wrapper);
-        return Result.success(new PageResult(page.getTotal(), page.getRecords()));
+
+        List<User> records = page.getRecords();
+
+        List<UserVO> convert = ReturnInfoUtils.convert(records, UserVO.class);
+
+        return Result.success(new PageResult(convert.size(),convert));
     }
 
     /**
@@ -142,6 +204,11 @@ public class AdminController {
     }
 
 
+    /**
+     * 修改用户信息
+     * @param userDTO
+     * @return
+     */
     @PutMapping()
     @ApiOperation(value = "修改用户信息")
     public Result update(@RequestBody UserDTO userDTO) {
@@ -149,4 +216,25 @@ public class AdminController {
         userService.updateUserById(userDTO);
         return Result.success(MsgSuccessConstant.UPDATE_SUCCESS);
     }
+
+
+    /**
+     * 删除用户。逻辑删除
+     * @param id
+     * @return
+     */
+    @PutMapping("/delete/{id}")
+    @ApiOperation(value = "用户删除")
+    public Result remove(@PathVariable Long id) {
+        log.info("删除的id: {}",id);
+        LambdaUpdateWrapper<User> updateWrapper
+                = new LambdaUpdateWrapper<>();
+
+        updateWrapper.eq(User::getId,id).set(User::getIsDelete, DeleteConstant.DISABLE);
+
+        userService.update(updateWrapper);
+        return Result.success();
+    }
+
+
 }

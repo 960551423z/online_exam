@@ -1,4 +1,4 @@
-package com.camellia.exam.model.dto;
+package com.camellia.exam.model.dto.user;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;

@@ -7,18 +7,14 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.io.Serializable;
-
 /**
  * @Author: 阿庆
- * @Date: 2024/1/16 16:41
+ * @Date: 2024/1/20 16:27
+ * 用户分页查询返回给前端信息
  */
 @Data
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
-@ApiModel(description = "用户登录返回的数据格式")
-public class UserLoginVO implements Serializable {
+@ApiModel(description = "用户分页查询返回的数据格式")
+public class UserVO {
     @ApiModelProperty("主键值")
     private Long id;
 
@@ -34,9 +30,6 @@ public class UserLoginVO implements Serializable {
     @ApiModelProperty("用户性别")
     private String userSex;
 
-    @ApiModelProperty("用户简介")
-    private String userProfile;
-
-    @ApiModelProperty("jwt令牌")
-    private String token;
+    @ApiModelProperty("用户角色")
+    private String userRole;
 }

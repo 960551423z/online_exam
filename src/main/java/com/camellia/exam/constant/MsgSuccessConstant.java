@@ -14,5 +14,9 @@ public class MsgSuccessConstant {
     public static final String UPDATE_SUCCESS = "登录成功";
 
 
+    public static final String EMAIL_SUCCESS = "邮件发送成功";
+
+    // 所有创建成功的
+    public static final String ADD_SUCCESS = "创建成功";
 
 }

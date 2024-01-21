@@ -22,6 +22,8 @@
             <result property="isDelete" column="isDelete" jdbcType="TINYINT"/>
     </resultMap>
 
+
+    <!--TODO: 这个好像少了-->
     <sql id="Base_Column_List">
         id,userAccount,userPassword,
         userName,userAvatar,userProfile,

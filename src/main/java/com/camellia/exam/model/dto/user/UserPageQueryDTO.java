@@ -1,4 +1,4 @@
-package com.camellia.exam.model.dto;
+package com.camellia.exam.model.dto.user;
 
 import lombok.Data;
 

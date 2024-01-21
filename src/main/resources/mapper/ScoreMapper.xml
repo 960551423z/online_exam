@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.camellia.exam.mapper.ScoreMapper">
+
+    <resultMap id="BaseResultMap" type="com.camellia.exam.model.entity.Score">
+            <id property="id" column="id" jdbcType="BIGINT"/>
+            <result property="userid" column="userId" jdbcType="BIGINT"/>
+            <result property="examPaperId" column="examPaperId" jdbcType="BIGINT"/>
+            <result property="result" column="result" jdbcType="INTEGER"/>
+            <result property="autoResult" column="autoResult" jdbcType="INTEGER"/>
+            <result property="manualResult" column="manualResult" jdbcType="INTEGER"/>
+            <result property="useTime" column="useTime" jdbcType="INTEGER"/>
+            <result property="finishTime" column="finishTime" jdbcType="INTEGER"/>
+            <result property="status" column="status" jdbcType="INTEGER"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,userId,examPaperId,
+        result,autoResult,manualResult,
+        useTime,finishTime,status
+    </sql>
+</mapper>

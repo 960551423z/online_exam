@@ -1,4 +1,4 @@
-package com.camellia.exam.model.dto;
+package com.camellia.exam.model.dto.user;
 
 import lombok.Builder;
 import lombok.Data;
@@ -38,6 +38,8 @@ public class UserDTO implements Serializable {
     // 用户头像
     private String userAvatar;
 
+    // 用户输入的验证码
+    private Integer code;
 
 
 }
